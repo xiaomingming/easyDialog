@@ -65,6 +65,75 @@ $('#easy-dialog').easyDialog({
     }
 });
 ```
+4.设置浮层位置（*IE6为position:absolute,其它支持fixed属性的浏览器使用position:fixed*）
+
+在不设置的情况下，默认在页面中心位置。但如果设置的话，依据css定位，只允许如下几种设置：
+
+* left,top
+* left,bottom
+* right,top
+* right,bottom
+* 水平或者垂直方向的居中，请使用`'center'`
+
+```javascript
+$('#easy-dialog').easyDialog({
+    pLeft:'center',//水平x轴居中
+    pTop:'center'//竖直Y轴居中
+});
+```
+```javascript
+$('#easy-dialog').easyDialog({
+    pLeft:'100px',//left:100px
+    pTop:'50px'//top:50px
+});
+```
+```javascript
+$('#easy-dialog').easyDialog({
+    pRight:'0',//right:0
+    pBottom:'0'//bottom:0
+});
+```
+```javascript
+$('#easy-dialog').easyDialog({
+    pLeft:'center',//left:50%;
+    pBottom:'0'//bottom:0
+});
+```
+5.确定按钮回调
+
+会在弹层关闭后执行回调
+
+```javascript
+$('#easy-dialog').easyDialog({
+    OK:function(){
+        window.location.href="http://www.baidu.com";
+    }
+});
+```
+6.是否生成遮罩层
+
+```javascript
+$('#easy-dialog').easyDialog({
+    isShowFilter:false //不生成遮罩层
+});
+```
+7.异步回调支持
+
+异步回调包括 定时器，ajax操作。支持在内容层的异步操作。提供参数为内容层的jquery DOM 对象。
+
+```javascript
+$('#easy-dialog').easyDialog({
+    dContentTmp: function(cont){
+        return $.get('/').done(function(res){
+            $(cont).html('<p>异步回调哦</p>');
+        }).fail(function(res){
+            $(cont).html('<p>异步回调失败咯</p>');
+
+        });
+    }
+});
+```
+
 
 
 
