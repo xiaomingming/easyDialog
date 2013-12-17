@@ -327,13 +327,12 @@
      * 默认配置
      */
     $.fn[pluginName].defaults = {
-        'cWidth': 300,
-        'isShowFilter': true,
-        'dContentTmp': function() {
+        cWidth: 300,
+        isShowFilter: true,
+        dContentTmp: function() {
             return ''
         },
-        'zindex': 4,
-        'cancel': function() {},
-        'OK': function() {}
+        zindex: 4,
+        OK: function() {}
     };
 })(window, jQuery);
