@@ -1,5 +1,5 @@
 .easy-dailog-filter { display: none; position: fixed; _position: absolute; background: #000; opacity:.8; filter: alpha(opacity=80); width: 100%; height: 100%; z-index: 3;  left: 0; top: 0; }
-.easy-dialog { width: 300px; background: #fff;  }
+.easy-dialog { /*width: 300px;*/ background: #fff;  }
 .easy-dialog * { margin: 0; padding: 0; }
 .easy-dialog-header { position: relative; width: 100%; height: 30px; line-height: 30px; background: lightseagreen; color: #fff; }
 .easy-dialog-header h1 { position: absolute; line-height: 30px; padding-left: 20px; font-size: 14px; }
