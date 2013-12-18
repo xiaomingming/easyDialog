@@ -21,13 +21,13 @@
     <div class="inner">
         <h1>Easydialog</h1>
         <h2>一个简单的jquery弹层插件</h2>
-        <a href="https://github.com/xiaomingming/easyDialog" class="button"><small>View project on</small>GitHub</a> </div>
+        <a href="https://github.com/xiaomingming/easyDialog" class="button"><small>View project on</small>GitHub</a></div>
 </header>
 <div id="content-wrapper">
     <div class="inner clearfix">
         <h3>demo</h3>
-        
-        <section id="main-content">
+        <button id="btn1"></button>
+        <section id="main-content" class="main-content">
             <div id="easy-dialog" class="easy-dialog"></div>
             <div id="easy-dialog2" class="easy-dialog"></div>
         </section>
@@ -41,28 +41,31 @@
 <script type="text/javascript" src="javascripts/easyDialog.js"></script>
 <script type="text/javascript">
     $(function() {
-        $('#easy-dialog2').easyDialog({
-            'cHeight': 80,
-            'dTitle': '测试标题',
-            dContentTmp: function(cont) {
-                $(cont).html('<p>先等待5秒哦</p>');
-                return setTimeout(function(){
-                    $(cont).html('<p>异步回调哦</p>');
-                },5*1000);
-            }, 
-            'dCloseTxt': '[]',
-            OK: function() {
-                $('#easy-dialog').easyDialog({
-                    'cHeight': 80,
-                    'dTitle': '测试标题',
-                    dContentTmp: '<p>你点开了浮层2</p>', 
-                    'dCloseTxt': 'close',
-                    OK: function() {
-                        
-                    }
-                });
-            }
-        });
+        var btnEvent=function(){
+            $('#easy-dialog2').easyDialog({
+                'cHeight': 80,
+                'dTitle': '测试标题',
+                dContentTmp: function(cont) {
+                    $(cont).html('<p>先等待5秒哦</p>');
+                    return setTimeout(function(){
+                        $(cont).html('<p>异步回调哦</p>');
+                    },5*1000);
+                }, 
+                'dCloseTxt': '[]',
+                OK: function() {
+                    $('#easy-dialog').easyDialog({
+                        'cHeight': 80,
+                        'dTitle': '测试标题',
+                        dContentTmp: '<p>你点开了浮层2</p>', 
+                        'dCloseTxt': 'close',
+                        OK: function() {
+                            
+                        }
+                    });
+                }
+            });
+        };
+        $('#btn1').on('click',btnEvent);
     });
 </script>
 </body>
