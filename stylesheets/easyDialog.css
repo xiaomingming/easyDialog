@@ -7,7 +7,7 @@
 /*最终宽高需要自行设定*/
 /*计算inner层内容的实际宽高，填充到其父层easy-dialog-content*/
 .easy-dialog-content { height:60px; background: #eee; color: #222; overflow-y: auto; }
-.easy-dialog-content .inner { padding: 10px; font-size: 12px; }
+.easy-dialog-content .easy-dialog-content-inner { padding: 10px; font-size: 12px; }
 .easy-dialog-footer { position: relative; text-align: right; background: lightgray; height: 30px; }
 .easy-dialog-footer p { display: inline-block; *display: inline; *zoom: 1; }
 .easy-dialog-footer button { float: left; margin-top: 3px; border: 1px solid orange; color: #666; border-radius: 3px; height: 24px; line-height: 24px; padding: 0 10px;  overflow: visible;/*for ie6*/ cursor: pointer; margin-left: 10px; _display: inline; }

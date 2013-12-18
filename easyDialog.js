@@ -39,7 +39,7 @@
         '<a href="#" class="easy-dialog-close">关闭</a>',
         '</div>',
         '<div class="easy-dialog-content">',
-        '<div class="inner"></div>',
+        '<div class="easy-dialog-content-inner"></div>',
         '</div>',
         '<div class="easy-dialog-footer">',
         '<p>',
