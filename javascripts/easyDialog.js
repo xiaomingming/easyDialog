@@ -65,7 +65,7 @@
         // 头部
         this.header = container.find('.easy-dialog-header');
         // 内容区域
-        this.cont = container.find('.easy-dialog-content .inner');
+        this.cont = container.find('.easy-dialog-content .easy-dialog-content-inner');
         // 底部
         this.footer = container.find('.easy-dialog-footer');
 
