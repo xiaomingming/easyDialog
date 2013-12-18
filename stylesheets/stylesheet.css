@@ -226,7 +226,6 @@ form {
 
 #main-content h1 {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; 
-  font-size: 2.8em;
   letter-spacing: -1px;
   color: #474747;
 } 
@@ -240,13 +239,11 @@ form {
 
 #main-content h2 {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; 
-  font-size: 22px;
   font-weight: bold;
   margin-bottom: 8px;
   color: #474747;
 } 
 #main-content h2:before {
-  content: "//";
   color: #9ddcff;
   padding-right: 0.3em;
   margin-left: -1.5em;
@@ -262,7 +259,6 @@ form {
 } 
  
 #main-content h3:before {
-  content: "///";
   color: #9ddcff;
   padding-right: 0.3em;
   margin-left: -2em;
@@ -276,7 +272,6 @@ form {
 } 
 
 h4:before {
-  content: "////";
   color: #9ddcff;
   padding-right: 0.3em;
   margin-left: -2.8em;
@@ -288,7 +283,6 @@ h4:before {
   color: #474747;
 } 
 h5:before {
-  content: "/////";
   color: #9ddcff;
   padding-right: 0.3em;
   margin-left: -3.2em;
@@ -296,11 +290,9 @@ h5:before {
 
 #main-content h6 {
   font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif; 
-  font-size: .8em;
   color: #474747;
 } 
 h6:before {
-  content: "//////";
   color: #9ddcff;
   padding-right: 0.3em;
   margin-left: -3.7em;
