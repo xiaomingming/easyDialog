@@ -24,10 +24,8 @@
 </header>
 <div id="content-wrapper">
     <div class="inner clearfix">
-        
         <section id="main-content" class="main-content">
-            <h3>demo</h3>
-            <button id="btn1">click me</button>
+            <h2>demo1</h2>
             <div class="demo-link">
                 <iframe width="100%" height="300" src="http://jsfiddle.net/xmlovecss/tcwyR/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
             </div>
@@ -42,34 +40,5 @@
 </div>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="javascripts/easyDialog.js"></script>
-<script type="text/javascript">
-    $(function() {
-        var btnEvent=function(){
-            $('#easy-dialog2').easyDialog({
-                'cHeight': 80,
-                'dTitle': '测试标题',
-                dContentTmp: function(cont) {
-                    $(cont).html('<p>先等待5秒哦</p>');
-                    return setTimeout(function(){
-                        $(cont).html('<p>异步回调哦</p>');
-                    },5*1000);
-                }, 
-                'dCloseTxt': '[]',
-                OK: function() {
-                    $('#easy-dialog').easyDialog({
-                        'cHeight': 80,
-                        'dTitle': '测试标题',
-                        dContentTmp: '<p>你点开了浮层2</p>', 
-                        'dCloseTxt': 'close',
-                        OK: function() {
-                            
-                        }
-                    });
-                }
-            });
-        };
-        $('#btn1').on('click',btnEvent);
-    });
-</script>
 </body>
 </html>

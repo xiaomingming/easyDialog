@@ -11,14 +11,14 @@
  * 异步阻塞会产生一个问题，未响应时，内容区为空，没有高度；响应后，还得重新计算高度
  * 对于这个问题，还是自行定义内容区高度，用户体验会更好，不至于产生抖动
  * 支持显示关闭的特效（暂时没想法）
+ * 可以取消确定按钮
  * example:
  *       $('.easy-dialog').easyDialog({
  *           'dTitle':'lallalala',
  *           'dContentTmp':'<p>ixixixixixixixixii</p>'
  *       });
  */
-;
-(function(window, $, undefined) {
+;(function(window, $, undefined) {
     var my = {},
         constructorFunName = 'EDialog',
         pluginName = 'easyDialog';
@@ -123,8 +123,7 @@
             // 弹层内容高度
             this.cHeight = this.cHeight || this.cont.outerHeight();
 
-            var _this = this,
-                headerHeight = this.header.outerHeight(),
+            var headerHeight = this.header.outerHeight(),
                 footerHeight = this.footer.outerHeight(),
                 containerHeight = this.cHeight + headerHeight + footerHeight;
 
@@ -134,7 +133,7 @@
                 headerHeight: headerHeight,
                 footerHeight: footerHeight,
                 containerHeight: containerHeight
-            }
+            };
 
         },
         // 设置浮层的位置
@@ -262,14 +261,14 @@
 
             // 滚动滚动条时，调整弹层位置
             // 只针对IE6
-            my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this))
+            my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this));
             return this;
         },
         // 浏览器滚动条滚动事件
         // 滚动时，是否要更改弹层的位置
         scrollEvent: function() {
             var w = $(window),
-                containerHeight = this.getDialogModelStyle().containerHeight;
+                containerHeight = this.getDialogModelStyle().containerHeight,
             scrollTop = w.scrollTop(),
             scrollLeft = w.scrollLeft();
 
@@ -330,7 +329,7 @@
         cWidth: 300,
         isShowFilter: true,
         dContentTmp: function() {
-            return ''
+            return '';
         },
         zindex: 4,
         OK: function() {}
