@@ -9,15 +9,12 @@
  * 自定义关闭回调
  * 支持内容异步获取（这个为嘛好难）
  * 异步阻塞会产生一个问题，未响应时，内容区为空，没有高度；响应后，还得重新计算高度
- * 对于这个问题，还是自行定义内容区高度，用户体验会更好，不至于产生抖动
- * 支持显示关闭的特效（暂时没想法）
  * example:
  *       $('.easy-dialog').easyDialog({
  *           'dTitle':'lallalala',
  *           'dContentTmp':'<p>ixixixixixixixixii</p>'
  *       });
  */
-;
 (function(window, $, undefined) {
     var my = {},
         constructorFunName = 'EDialog',
@@ -32,53 +29,47 @@
     my.isIE6 = function() {
         return $.browser.msie && ($.browser.version === '6.0');
     };
-    // 弹层模板
-    my.dialogTmp = [
-        '<div class="easy-dialog-header">',
-        '<h1>弹层名</h1>',
-        '<a href="#" class="easy-dialog-close">关闭</a>',
-        '</div>',
-        '<div class="easy-dialog-content">',
-        '<div class="inner"></div>',
-        '</div>',
-        '<div class="easy-dialog-footer">',
-        '<p>',
-        '<button type="button" class="btn-confirm">确定</button>',
-        '</p>',
-        '</div>'
-    ].join('');
-    // 遮罩模板
-    my.dialogFilterTmp = '<div class="easy-dailog-filter"></div>';
-    // 启动渲染模板
-    my.renderTmp = function(wrapper) {
-        // 先清空，再填充，避免产生重复填充的问题
-        wrapper.html('').append(my.dialogTmp);
-    };
-
     // 构造函数开始
     my[constructorFunName] = function(container, options) {
         var settings = $.extend({}, $.fn[pluginName].defaults, options);
         // 初始化
         this.container = container;
-        // 模板渲染
-        my.renderTmp(this.container);
-        // 头部
-        this.header = container.find('.easy-dialog-header');
-        // 内容区域
-        this.cont = container.find('.easy-dialog-content .inner');
-        // 底部
-        this.footer = container.find('.easy-dialog-footer');
-
-        // 弹层层叠值
-        this.zindex = settings.zindex;
+        // 弹层确认内容
+        this.dOKVal = settings.dOKVal;
+        // 确定按钮类型设置
+        this.dOKType = settings.dOKType;
         // 弹层标题
         this.dTitle = settings.dTitle;
         // 弹层关闭内容
         this.dCloseTxt = settings.dCloseTxt;
+        this.dialogFilterTmp = '<div class="easy-dailog-filter"></div>';
+        this.dialogTmp = [
+            '<div class="easy-dialog-header">',
+            '<h1>'+this.dTitle+'</h1>',
+            '<a href="#" class="easy-dialog-close">'+this.dCloseTxt+'</a>',
+            '</div>',
+            '<div class="easy-dialog-content">',
+            '<div class="easy-dialog-content-inner"></div>',
+            '</div>',
+            '<div class="easy-dialog-footer">',
+            '<p>',
+            '<button type="'+this.dOKType+'" class="btn-confirm">'+this.dOKVal+'</button>',
+            '</p>',
+            '</div>'
+        ].join('');
+        // 模板渲染
+        container.html('').append(this.dialogTmp);
+        // 头部
+        this.header = container.find('.easy-dialog-header');
+        // 内容区域
+        this.cont = container.find('.easy-dialog-content .easy-dialog-content-inner');
+        // 底部
+        this.footer = container.find('.easy-dialog-footer');
+        // 弹层层叠值
+        this.zindex = settings.zindex;
         // 弹层填充内容
         // 目前仅仅支持html片段
         this.dContentTmp = settings.dContentTmp;
-
         // 弹层内容宽度设置
         // 此时还不是精确宽高
         // 需要等到内容填充完成后获取
@@ -92,6 +83,7 @@
         this.pBottom = settings.pBottom;
         // 关闭
         this.closeBtn = this.header.find('.easy-dialog-close');
+        
         // 确定，取消按钮
         this.confirmBtn = this.footer.find('.btn-confirm');
         // this.cancelBtn = this.footer.find('.btn-cancel');
@@ -108,7 +100,8 @@
         init: function() {
             this
                 .renderDialogContent()
-                .renderDialogTitle()
+                // .renderDialogTitle()
+                // .renderDialogFooter()
                 .renderDialogModel()
                 .eventControl();
             this.isShowFilter && this.renderFilterContent();
@@ -123,8 +116,7 @@
             // 弹层内容高度
             this.cHeight = this.cHeight || this.cont.outerHeight();
 
-            var _this = this,
-                headerHeight = this.header.outerHeight(),
+            var headerHeight = this.header.outerHeight(),
                 footerHeight = this.footer.outerHeight(),
                 containerHeight = this.cHeight + headerHeight + footerHeight;
 
@@ -134,7 +126,7 @@
                 headerHeight: headerHeight,
                 footerHeight: footerHeight,
                 containerHeight: containerHeight
-            }
+            };
 
         },
         // 设置浮层的位置
@@ -193,17 +185,6 @@
             this.container.css(dialogStyleSettings).show();
             return this;
         },
-        // 盒模型确定好后，
-        // 开始进行内容渲染
-        // 渲染头，内容，底部
-        setDialogTitle: function() {
-            return this.dTitle;
-        },
-        renderDialogTitle: function() {
-            this.header.find('h1').text(this.setDialogTitle());
-            this.header.find('.easy-dialog-close').text(this.dCloseTxt);
-            return this;
-        },
         setDialogContent: function(cont) {
             if (my.isYourType(this.dContentTmp, 'function')) {
                 return this.dContentTmp(cont);
@@ -235,7 +216,7 @@
         // 渲染遮罩层
         renderFilterContent: function() {
             // 若遮罩层存在，则不进行重复插入
-            !($('.easy-dailog-filter').length) && $('body').append(my.dialogFilterTmp);
+            !($('.easy-dailog-filter').length) && $('body').append(this.dialogFilterTmp);
             // 为了兼容IE6，设置遮罩层高度
             // 高度为浮层高度和document高度中最大的
             var filterHeight = Math.max(this.getDialogModelStyle().containerHeight, $(document).height());
@@ -262,16 +243,16 @@
 
             // 滚动滚动条时，调整弹层位置
             // 只针对IE6
-            my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this))
+            my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this));
             return this;
         },
         // 浏览器滚动条滚动事件
         // 滚动时，是否要更改弹层的位置
         scrollEvent: function() {
             var w = $(window),
-                containerHeight = this.getDialogModelStyle().containerHeight;
-            scrollTop = w.scrollTop(),
-            scrollLeft = w.scrollLeft();
+                containerHeight = this.getDialogModelStyle().containerHeight,
+                scrollTop = w.scrollTop(),
+                scrollLeft = w.scrollLeft();
 
             this.container.css({
                 'marginTop': (-containerHeight / 2) + scrollTop + 'px',
@@ -328,9 +309,13 @@
      */
     $.fn[pluginName].defaults = {
         cWidth: 300,
+        dOKType:'button',
+        dOKVal:'确定',
+        dTitle:'',
+        dCloseTxt:'关闭',
         isShowFilter: true,
         dContentTmp: function() {
-            return ''
+            return '';
         },
         zindex: 4,
         OK: function() {}
