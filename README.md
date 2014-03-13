@@ -9,8 +9,14 @@
 * 支持异步回调
 * 支持浮层信息DOM片段定义
 * 遮罩显示/隐藏
+* 浮层底部显示/隐藏
+* 浮层层叠值设置
 
-正在逐步完善，欢迎反馈。
+暂时不支持对嵌入图片的高度自适应，正在完善中，欢迎使用并反馈。
+
+##兼容性
+
+IE6+，其它高级浏览器。
 
 ##使用文档
 ###html
@@ -67,7 +73,7 @@ $('#easy-dialog').easyDialog({
     }
 });
 ```
-4.设置浮层位置（*IE6为position:absolute,其它支持fixed属性的浏览器使用position:fixed*）
+4.设置浮层位置（插件实现：*IE6为position:absolute的居中效果,其它支持fixed属性的浏览器使用position:fixed*）
 
 在不设置的情况下，默认在页面中心位置。但如果设置的话，依据css定位，只允许如下几种设置：
 
@@ -101,14 +107,23 @@ $('#easy-dialog').easyDialog({
     pBottom:'0'//bottom:0
 });
 ```
-5.确定按钮回调
+5.确定按钮事件
 
-会在弹层关闭后执行回调
+默认点击确定，不关闭浮层。需要手动设置。
+```javascript
+$('#easy-dialog').easyDialog({
+    OK:function(){
+        return true;//默认设置为“return false”
+    }
+});
+```
+弹层关闭后执行回调
 
 ```javascript
 $('#easy-dialog').easyDialog({
     OK:function(){
-        window.location.href="http://www.baidu.com";
+        //callback is here;
+        return true;
     }
 });
 ```
@@ -119,7 +134,38 @@ $('#easy-dialog').easyDialog({
     isShowFilter:false //不生成遮罩层
 });
 ```
-7.异步回调支持
+7.是否显示浮层底部
+
+```javascript
+$('#easy-dialog').easyDialog({
+    isShowFooter:false //不显示
+});
+```
+8.浮层层叠值设置
+
+本来这种事情可以在css中去做，目前先提供这样的接口。
+
+赞成使用很小的层叠值(不超过12)，正常页面的层叠值不会有多高，而不是`9999`这样的脑残设置。
+
+```javascript
+$('#easy-dialog').easyDialog({
+    zindex:11 //默认值为11
+});
+```
+9.内容模板操作
+
+常见的需求是，设置了浮层的内容，然后还要对内容区进行各种操作。目前这里提供了针对内容区的DOM接口以供操作。
+
+```javascript
+$('#easy-dialog').easyDialog({
+    dContentTmp: function(cont){
+        var tpl=['<div class="test">test</div>'].join('');
+        $(cont).html(tpl);
+        $(cont).find('.test').fadeIn();
+    }
+});
+```
+10.异步回调支持
 
 异步回调包括 定时器，ajax操作。支持在内容层的异步操作。提供参数为内容层的jquery DOM 对象。
 
