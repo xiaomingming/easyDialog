@@ -35,7 +35,7 @@ $('#easy-dialog').easyDialog({
     dContentTmp: '<p>啦啦啦，这是一个浮层测试</p>' , 
     dCloseTxt: 'close',
     OK: function() {
-        window.location.href="http://www.baidu.com";
+        return true;
     }
 });
 ```
@@ -162,6 +162,7 @@ $('#easy-dialog').easyDialog({
         var tpl=['<div class="test">test</div>'].join('');
         $(cont).html(tpl);
         $(cont).find('.test').fadeIn();
+        return cont;
     }
 });
 ```
@@ -176,7 +177,6 @@ $('#easy-dialog').easyDialog({
             $(cont).html('<p>异步回调哦</p>');
         }).fail(function(res){
             $(cont).html('<p>异步回调失败咯</p>');
-
         });
     }
 });
