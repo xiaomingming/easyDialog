@@ -27,6 +27,8 @@
         var settings = $.extend({}, $.fn[pluginName].defaults, options);
         // 初始化
         this.container = container;
+        // 是否展示图片
+        this.isShowImage = settings.isShowImage;
         // 弹层确认内容
         this.dOKVal = settings.dOKVal;
         // 确定按钮类型设置
@@ -66,7 +68,7 @@
         // 是否移除页脚
         if (!this.isShowFooter) {
             /*修复jquery 在firefox下的 dom remove 方法bug，移除后的dom css定义高度仍然会被计算*/
-            this.footer.remove().css('height','0');
+            this.footer.remove().css('height', '0');
         }
 
         // 弹层层叠值
@@ -104,13 +106,74 @@
     my[constructorFunName].prototype = {
         constructor: my[constructorFunName],
         init: function() {
-            this
-                .renderDialogContent()
-                .renderDialogTitle()
-                .renderDialogFooter()
-                .renderDialogModel()
-                .eventControl();
-            this.isShowFilter && this.renderFilterContent();
+            var _this = this;
+            _this.renderDialogContent();
+
+            var initilize = function() {
+                _this
+                    .renderDialogTitle()
+                    .renderDialogFooter()
+                    .renderDialogModel()
+                    .eventControl()
+                    .fixHeight();
+                _this.isShowFilter && _this.renderFilterContent();
+            };
+            // initilize();
+            this.isShowImage ? $.when(this.imgReady()).then(initilize(),function(){
+                _this.cont.find('img').attr('alt','图片载入失败');
+            }) : initilize();
+        },
+        fixHeight: function() {
+            var _this = this;
+            var h = this.getDialogModelStyle().containerHeight;
+            this.container.css({
+                'height': h + 'px',
+                'marginTop': _this.topCenter ? ((-h / 2) + (my.isIE6() ? $(window).scrollTop() : 0) + 'px') : '0'
+            });
+            this.cont.parent('.easy-dialog-content').css({
+                'height': _this.cont.outerHeight() + 'px'
+            });
+            return this;
+        },
+        // 判断图片是否载入完毕
+        isImgLoaded: function() {
+            var imgArr = this.cont.find('img'),
+                i = 0,
+                j = imgArr.length,
+                isReady = j ? true : false;
+            for (; i < j; i += 1) {
+                if (!imgArr[i].complete) {
+                    isReady = false;
+                    break;
+                }
+            }
+            return isReady;
+        },
+        imgReady: function() {
+            var def = $.Deferred(),
+                _this = this,
+                readyCallback,
+                timer,
+                startTime=new Date(),
+                endTime,
+                limitTime;//统计调用时间
+            readyCallback = function() {
+                limitTime=new Date()-startTime;
+                if(limitTime>300){
+                    def.reject();
+                    return def;
+                }
+                timer = setTimeout(function() {
+                    if (_this.isImgLoaded()) {
+                        def.resolve();
+                        clearTimeout(timer);
+                    } else {
+                        readyCallback();
+                    }
+                }, 50);
+            };
+            readyCallback();
+            return def;
         },
         // 计算弹层总体高度
         // 应当在内容填充成功以后作为回调
@@ -121,10 +184,11 @@
             this.cWidth = this.cWidth || this.cont.outerWidth();
             // 弹层内容高度
             this.cHeight = this.cHeight || this.cont.outerHeight();
+
             var headerHeight = this.header.outerHeight(),
                 footerHeight = this.footer.outerHeight(),
                 containerHeight = this.cHeight + headerHeight + footerHeight;
-            
+
             return {
                 headerHeight: headerHeight,
                 footerHeight: footerHeight,
@@ -157,8 +221,7 @@
              * 内容区填充
              */
             this.cont.parent('.easy-dialog-content').css({
-                'width': _this.cWidth + 'px',
-                'height': _this.cHeight + 'px'
+                'width': _this.cWidth + 'px'
             });
             // 自定义位置配置
             dialogStyleSettings.left = this.pLeft;
@@ -178,8 +241,6 @@
             pubSettings = {
                 'position': my.isIE6() ? 'absolute' : 'fixed',
                 'width': _this.cWidth + 'px',
-                'height': containerHeight + 'px',
-                'marginTop': _this.topCenter ? ((-containerHeight / 2) + (my.isIE6() ? windowScrollTop : 0) + 'px') : '0',
                 'marginLeft': _this.leftCenter ? ((-_this.cWidth / 2) + 'px') : '0',
                 'zIndex': _this.zindex
             };
@@ -263,6 +324,13 @@
             // 滚动滚动条时，调整弹层位置
             // 只针对IE6
             my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this));
+
+            $(document).on('click',function(e){
+                var t=$(e.target);
+                if(t.attr('class')==='easy-dailog-filter'){
+                    _this.closeEvent();
+                }
+            });
             return this;
         },
         // 浏览器滚动条滚动事件
@@ -331,6 +399,7 @@
         dOKVal: '确定',
         dTitle: '',
         dCloseTxt: '关闭',
+        isShowImage: false,
         isDestroy: false,
         isShowFooter: true,
         isShowFilter: true,
@@ -339,7 +408,7 @@
         },
         zindex: 11,
         OK: function() {
-            return false; //点击确定，需要自动关闭，返回true即可
+            return false; //需要自动关闭，返回true即可
         }
     };
 })(window, jQuery);
