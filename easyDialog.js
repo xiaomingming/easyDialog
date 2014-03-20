@@ -29,6 +29,8 @@
         this.container = container;
         // 是否展示图片
         this.isShowImage = settings.isShowImage;
+        // 限制图片载入时间
+        this.limitTime = settings.limitTime;
         // 弹层确认内容
         this.OKVal = settings.OKVal;
         // 确定按钮类型设置
@@ -118,9 +120,7 @@
                 _this.isShowFilter && _this.renderFilterContent();
             };
             // initilize();
-            this.isShowImage ? $.when(this.imgReady()).then(initilize(), function() {
-                _this.cont.find('img').remove();
-            }) : initilize();
+            this.isShowImage ? $.when(this.imgReady()).then(initilize()) : initilize();
         },
         updateHeight: function() {
             this.isUpdate = true;
@@ -164,7 +164,7 @@
                 limitTime; //统计调用时间
             readyCallback = function() {
                 limitTime = new Date() - startTime;
-                if (limitTime > 300) {
+                if (limitTime > _this.limitTime) {
                     def.reject();
                     return def;
                 }
@@ -189,7 +189,7 @@
             this.width = this.isUpdate ? this.cont.outerWidth() : this.width || this.cont.outerWidth();
             // 弹层内容高度
             this.height = this.isUpdate ? this.cont.outerHeight() : this.height || this.cont.outerHeight();
-            
+
             var headerHeight = this.header.outerHeight(),
                 footerHeight = this.footer.outerHeight(),
                 containerHeight = this.height + headerHeight + footerHeight;
@@ -407,6 +407,7 @@
         tit: '',
         closeTxt: '关闭',
         isShowImage: false,
+        limitTime: 300, //图片载入时间限制
         isDestroy: false,
         isShowFooter: true,
         isShowFilter: true,
