@@ -15,25 +15,29 @@
         <script type="text/javascript">
             $(function() {
                 $('#easy-dialog2').easyDialog({
-                    'cHeight': 80,
-                    'dTitle': '测试标题',
-                    dContentTmp: function(cont) {
-                        $(cont).html('<p>先等待5秒哦</p>');
+                    // 'height': 80,
+                    'tit': '测试标题',
+                    isDestroy:true,
+                    tmp: function(cont) {
+                        var _this=this;
+                        $(cont).html('<p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p>');
                         return setTimeout(function(){
-                            $(cont).html('<p>异步回调哦</p>');
+                            $(cont).html('<div>异步回调，异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调</div>');
+                            _this.updateHeight();
                         },5*1000);
                     }, 
-                    'dCloseTxt': '[]',
+                    'closeTxt': '[]',
                     OK: function() {
                         $('#easy-dialog').easyDialog({
-                            'cHeight': 80,
-                            'dTitle': '测试标题',
-                            dContentTmp: '<p>你点开了浮层2</p>', 
-                            'dCloseTxt': 'close',
+                            // 'height': 80,
+                            'tit': '测试标题',
+                            tmp: '<p>你点开了浮层2</p>', 
+                            'closeTxt': 'close',
                             OK: function() {
                                 
                             }
                         });
+                        return true;
                     }
                 });
             });

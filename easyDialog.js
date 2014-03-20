@@ -30,13 +30,13 @@
         // 是否展示图片
         this.isShowImage = settings.isShowImage;
         // 弹层确认内容
-        this.dOKVal = settings.dOKVal;
+        this.OKVal = settings.OKVal;
         // 确定按钮类型设置
-        this.dOKType = settings.dOKType;
+        this.OKType = settings.OKType;
         // 弹层标题
-        this.dTitle = settings.dTitle;
+        this.tit = settings.tit;
         // 弹层关闭内容
-        this.dCloseTxt = settings.dCloseTxt;
+        this.closeTxt = settings.closeTxt;
         // 是否关闭弹层后，销毁弹层
         this.isDestroy = settings.isDestroy;
         this.dialogFilterTmp = '<div class="easy-dailog-filter"></div>';
@@ -44,15 +44,15 @@
         this.isShowFooter = settings.isShowFooter;
         this.dialogTmp = [
             '<div class="easy-dialog-header">',
-            '<h1>' + this.dTitle + '</h1>',
-            '<a href="javascript:void(0)" class="easy-dialog-close">' + this.dCloseTxt + '</a>',
+            '<h1>' + this.tit + '</h1>',
+            '<a href="javascript:void(0)" class="easy-dialog-close">' + this.closeTxt + '</a>',
             '</div>',
             '<div class="easy-dialog-content">',
             '<div class="easy-dialog-content-inner"></div>',
             '</div>',
             '<div class="easy-dialog-footer">',
             '<p>',
-            '<button type="' + this.dOKType + '" class="btn-confirm">' + this.dOKVal + '</button>',
+            '<button type="' + this.OKType + '" class="btn-confirm">' + this.OKVal + '</button>',
             '</p>',
             '</div>'
         ].join('');
@@ -72,18 +72,18 @@
         }
 
         // 弹层层叠值
-        this.zindex = settings.zindex;
+        this.zIndex = settings.zIndex;
 
         // 弹层填充内容
         // 目前仅仅支持html片段
-        this.dContentTmp = settings.dContentTmp;
+        this.tmp = settings.tmp;
 
         // 弹层内容宽度设置
         // 此时还不是精确宽高
         // 需要等到内容填充完成后获取
-        this.cWidth = Number(settings.cWidth || 0);
+        this.width = Number(settings.width || 0);
         // 弹层内容高度
-        this.cHeight = Number(settings.cHeight || 0);
+        this.height = Number(settings.height || 0);
         // 获取位置设置
         this.pLeft = settings.pLeft;
         this.pTop = settings.pTop;
@@ -94,7 +94,6 @@
 
         // 确定，取消按钮
         this.confirmBtn = this.footer.find('.btn-confirm');
-        // this.cancelBtn = this.footer.find('.btn-cancel');
         // 是否显示遮罩层
         this.isShowFilter = settings.isShowFilter;
         // 获取回调
@@ -119,13 +118,19 @@
                 _this.isShowFilter && _this.renderFilterContent();
             };
             // initilize();
-            this.isShowImage ? $.when(this.imgReady()).then(initilize(),function(){
-                _this.cont.find('img').attr('alt','图片载入失败');
+            this.isShowImage ? $.when(this.imgReady()).then(initilize(), function() {
+                _this.cont.find('img').remove();
             }) : initilize();
         },
-        fixHeight: function() {
-            var _this = this;
-            var h = this.getDialogModelStyle().containerHeight;
+        updateHeight: function() {
+            this.isUpdate = true;
+            this.fixHeight();
+            return this;
+        },
+        // 浮层内容渲染好后，再计算高度并更改
+        fixHeight: function(isUpdate) {
+            var _this = this,
+                h = this.getDialogModelStyle().containerHeight;
             this.container.css({
                 'height': h + 'px',
                 'marginTop': _this.topCenter ? ((-h / 2) + (my.isIE6() ? $(window).scrollTop() : 0) + 'px') : '0'
@@ -154,12 +159,12 @@
                 _this = this,
                 readyCallback,
                 timer,
-                startTime=new Date(),
+                startTime = new Date(),
                 endTime,
-                limitTime;//统计调用时间
+                limitTime; //统计调用时间
             readyCallback = function() {
-                limitTime=new Date()-startTime;
-                if(limitTime>300){
+                limitTime = new Date() - startTime;
+                if (limitTime > 300) {
                     def.reject();
                     return def;
                 }
@@ -181,13 +186,13 @@
         getDialogModelStyle: function() {
             // 精确获取内容实际宽高
             // 弹层内容宽度
-            this.cWidth = this.cWidth || this.cont.outerWidth();
+            this.width = this.isUpdate ? this.cont.outerWidth() : this.width || this.cont.outerWidth();
             // 弹层内容高度
-            this.cHeight = this.cHeight || this.cont.outerHeight();
-
+            this.height = this.isUpdate ? this.cont.outerHeight() : this.height || this.cont.outerHeight();
+            
             var headerHeight = this.header.outerHeight(),
                 footerHeight = this.footer.outerHeight(),
-                containerHeight = this.cHeight + headerHeight + footerHeight;
+                containerHeight = this.height + headerHeight + footerHeight;
 
             return {
                 headerHeight: headerHeight,
@@ -221,7 +226,7 @@
              * 内容区填充
              */
             this.cont.parent('.easy-dialog-content').css({
-                'width': _this.cWidth + 'px'
+                'width': _this.width + 'px'
             });
             // 自定义位置配置
             dialogStyleSettings.left = this.pLeft;
@@ -240,9 +245,9 @@
             // 公共样式配置
             pubSettings = {
                 'position': my.isIE6() ? 'absolute' : 'fixed',
-                'width': _this.cWidth + 'px',
-                'marginLeft': _this.leftCenter ? ((-_this.cWidth / 2) + 'px') : '0',
-                'zIndex': _this.zindex
+                'width': _this.width + 'px',
+                'marginLeft': _this.leftCenter ? ((-_this.width / 2) + 'px') : '0',
+                'zIndex': _this.zIndex
             };
             dialogStyleSettings = $.extend(dialogStyleSettings, pubSettings);
             // 
@@ -253,22 +258,24 @@
         // 开始进行内容渲染
         // 渲染头，内容，底部
         setDialogTitle: function() {
-            return this.dTitle;
+            return this.tit;
         },
         renderDialogTitle: function() {
             this.header.find('h1').text(this.setDialogTitle());
-            this.header.find('.easy-dialog-close').text(this.dCloseTxt);
+            this.header.find('.easy-dialog-close').text(this.closeTxt);
             return this;
         },
         renderDialogFooter: function() {
-            this.confirmBtn.text(this.dOKVal);
+            this.confirmBtn.text(this.OKVal);
             return this;
         },
         setDialogContent: function(cont) {
-            if (my.isYourType(this.dContentTmp, 'function')) {
-                return this.dContentTmp(cont);
-            } else if (my.isYourType(this.dContentTmp, 'string')) {
-                return this.dContentTmp;
+            if (my.isYourType(this.tmp, 'function')) {
+                console.log('function');
+                return this.tmp(cont);
+            } else if (my.isYourType(this.tmp, 'string')) {
+                console.log('string');
+                return this.tmp;
             }
 
         },
@@ -283,6 +290,7 @@
             if (my.isYourType(this.setDialogContent(), 'string')) {
                 this.cont.html(this.setDialogContent());
             } else {
+                // 异步处理，返回this.cont接口，以供回调
                 this.setDialogContent(this.cont);
             }
 
@@ -300,7 +308,7 @@
             var filterHeight = Math.max(this.getDialogModelStyle().containerHeight, $(document).height());
             $('.easy-dailog-filter').css({
                 'height': filterHeight + 'px',
-                'z-index': _this.zindex - 1
+                'z-index': _this.zIndex - 1
             }).show();
             return this;
         },
@@ -325,9 +333,9 @@
             // 只针对IE6
             my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this));
 
-            $(document).on('click',function(e){
-                var t=$(e.target);
-                if(t.attr('class')==='easy-dailog-filter'){
+            $(document).on('click', function(e) {
+                var t = $(e.target);
+                if (t.attr('class') === 'easy-dailog-filter') {
                     _this.closeEvent();
                 }
             });
@@ -343,17 +351,18 @@
 
             this.container.css({
                 'marginTop': (-containerHeight / 2) + scrollTop + 'px',
-                'marginLeft': (-this.cWidth / 2) + scrollLeft + 'px'
+                'marginLeft': (-this.width / 2) + scrollLeft + 'px'
             });
+        },
+        // 销毁浮层内容区
+        destory: function() {
+            this.container.html('').attr('style', '').removeData('plugin-' + pluginName);
+            return this;
         },
         // 按钮关闭
         // 这里要考虑，关闭按钮后，是否清空内容区，还是仅仅隐藏
         closeEvent: function() {
-            if (this.isDestroy) {
-                this.container.html('').attr('style', '').removeData('plugin-' + pluginName);
-            } else {
-                this.hideDialog();
-            }
+            this.isDestroy ? this.destory() : this.hideDialog();
             // 遮罩层考虑不进行清空
             this.hideFilter();
         },
@@ -394,19 +403,19 @@
      * 默认配置
      */
     $.fn[pluginName].defaults = {
-        cWidth: 300,
-        dOKType: 'button',
-        dOKVal: '确定',
-        dTitle: '',
-        dCloseTxt: '关闭',
+        width: 300,
+        OKType: 'button',
+        OKVal: '确定',
+        tit: '',
+        closeTxt: '关闭',
         isShowImage: false,
         isDestroy: false,
         isShowFooter: true,
         isShowFilter: true,
-        dContentTmp: function() {
+        tmp: function() {
             return '';
         },
-        zindex: 11,
+        zIndex: 11,
         OK: function() {
             return false; //需要自动关闭，返回true即可
         }
