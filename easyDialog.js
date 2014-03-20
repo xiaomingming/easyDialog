@@ -271,10 +271,8 @@
         },
         setDialogContent: function(cont) {
             if (my.isYourType(this.tmp, 'function')) {
-                console.log('function');
                 return this.tmp(cont);
             } else if (my.isYourType(this.tmp, 'string')) {
-                console.log('string');
                 return this.tmp;
             }
 
