@@ -4,7 +4,7 @@
 
 这是一个基于`jquery 1.8.2`版本的弹层插件，目前支持的功能包括：
 
-* 非异步的宽高自适应，宽高也可定义
+* 宽高自适应(包括插入图片，异步插入内容)
 * 自定义浮层位置，默认居中
 * 支持异步回调
 * 支持浮层信息DOM片段定义
@@ -12,7 +12,6 @@
 * 浮层底部显示/隐藏
 * 浮层层叠值设置
 
-暂时不支持对嵌入图片的高度自适应，正在完善中，欢迎使用并反馈。
 
 ##兼容性
 
@@ -30,10 +29,10 @@ IE6+，其它高级浏览器。
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    cHeight: 80,
-    dTitle: '测试标题',
-    dContentTmp: '<p>啦啦啦，这是一个浮层测试</p>' , 
-    dCloseTxt: 'close',
+    height: 80,
+    title: '测试标题',
+    tmp: '<p>啦啦啦，这是一个浮层测试</p>' , 
+    closeTxt: 'close',
     OK: function() {
         return true;
     }
@@ -44,15 +43,15 @@ $('#easy-dialog').easyDialog({
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    cHeight: 80,//高度
-    cWidth: 200//宽度
+    height: 80,//高度
+    width: 200//宽度
 });
 ```
 2.设置关闭文本内容
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    dCloseTxt: 'close'//设置为'close'
+    closeTxt: 'close'//设置为'close'
 });
 ```
 3.设置浮层信息DOM结构
@@ -61,18 +60,19 @@ $('#easy-dialog').easyDialog({
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    dContentTmp: '<p>啦啦啦，这是一个浮层测试</p>' 
+    tmp: '<p>啦啦啦，这是一个浮层测试</p>' 
 });
 ```
 函数方式定义：
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    dContentTmp: function(){
+    tmp: function(){
         return '<p>啦啦啦，这是一个浮层测试</p>' 
     }
 });
 ```
+
 4.设置浮层位置（插件实现：*IE6为position:absolute的居中效果,其它支持fixed属性的浏览器使用position:fixed*）
 
 在不设置的情况下，默认在页面中心位置。但如果设置的话，依据css定位，只允许如下几种设置：
@@ -141,6 +141,16 @@ $('#easy-dialog').easyDialog({
     isShowFooter:false //不显示
 });
 ```
+8.是否显示前景图片
+
+因为浮层需要等待图片下载完成后才能
+
+```javascript
+$('#easy-dialog').easyDialog({
+    isShowImage:false //不显示
+});
+```
+
 8.浮层层叠值设置
 
 本来这种事情可以在css中去做，目前先提供这样的接口。
@@ -158,7 +168,7 @@ $('#easy-dialog').easyDialog({
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    dContentTmp: function(cont){
+    tmp: function(cont){
         var tpl=['<div class="test">test</div>'].join('');
         $(cont).html(tpl);
         $(cont).find('.test').fadeIn();
@@ -169,10 +179,11 @@ $('#easy-dialog').easyDialog({
 10.异步回调支持
 
 异步回调包括 定时器，ajax操作。支持在内容层的异步操作。提供参数为内容层的jquery DOM 对象。
+暴露了`tmp`函数的参数`cont`为浮层内容的jquery对象。
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    dContentTmp: function(cont){
+    tmp: function(cont){
         return $.get('/').done(function(res){
             $(cont).html('<p>异步回调哦</p>');
         }).fail(function(res){
@@ -181,7 +192,22 @@ $('#easy-dialog').easyDialog({
     }
 });
 ```
+11.异步自适应
 
+异步自适应高度，需要手动触发`updateHeight`函数。
+
+```javascript
+$('#easy-dialog').easyDialog({
+    tmp: function(cont){
+        var _this=this;
+        $(cont).html('<p>先等待3秒哦</p>');
+        return setTimeout(function(){
+            $(cont).html('<div><p>异步回调，我要填充，使劲儿填充，充满你的身体。</p><p>异步回调，我要填充，使劲儿填充，充满你的身体。</p><p>异步回调，我要填充，使劲儿填充，充满你的身体。</p></div>');
+            _this.updateHeight();
+        },3*1000);
+    }
+});
+```
 
 
 
