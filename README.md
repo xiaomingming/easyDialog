@@ -160,7 +160,7 @@ $('#easy-dialog').easyDialog({
 
 ```javascript
 $('#easy-dialog').easyDialog({
-    zindex:11 //默认值为11
+    zIndex:11 //默认值为11
 });
 ```
 10.内容模板操作
