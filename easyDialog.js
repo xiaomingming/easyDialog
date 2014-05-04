@@ -27,10 +27,20 @@
         var settings = $.extend({}, $.fn[pluginName].defaults, options);
         // 初始化
         this.container = container;
+        // 浮层是否fixed
+        this.isFixed = settings.isFixed;
+        // 浮层是否只显示一会儿就自动隐藏
+        this.isFade = settings.isFade;
+        // fade Time
+        this.fadeDelay = settings.fadeDelay;
+        // fade 回调
+        this.fadeCallback = settings.fadeCallback;
+        // limiteTime 
+        this.limiteTime = settings.limiteTime;
+        // 是否显示头部
+        this.isShowHeader = settings.isShowHeader;
         // 是否展示图片
         this.isShowImage = settings.isShowImage;
-        // 限制图片载入时间
-        this.limitTime = settings.limitTime;
         // 弹层确认内容
         this.OKVal = settings.OKVal;
         // 确定按钮类型设置
@@ -67,12 +77,16 @@
         this.cont = container.find('.easy-dialog-content .easy-dialog-content-inner');
         // 底部
         this.footer = container.find('.easy-dialog-footer');
+        // 是否移头部 
+        if (!this.isShowHeader) {
+            /*修复jquery 在firefox下的 dom remove 方法bug，移除后的dom css定义高度仍然会被计算*/
+            this.header.remove().css('height', '0');
+        }
         // 是否移除页脚
         if (!this.isShowFooter) {
             /*修复jquery 在firefox下的 dom remove 方法bug，移除后的dom css定义高度仍然会被计算*/
             this.footer.remove().css('height', '0');
         }
-
         // 弹层层叠值
         this.zIndex = settings.zIndex;
 
@@ -96,6 +110,7 @@
 
         // 确定，取消按钮
         this.confirmBtn = this.footer.find('.btn-confirm');
+        // this.cancelBtn = this.footer.find('.btn-cancel');
         // 是否显示遮罩层
         this.isShowFilter = settings.isShowFilter;
         // 获取回调
@@ -117,26 +132,35 @@
                     .renderDialogModel()
                     .eventControl()
                     .fixHeight();
+
                 _this.isShowFilter && _this.renderFilterContent();
+                // 若是只显示几秒浮层就自动消失
+                if (_this.isFade) {
+                    $.when(_this.container.fadeOut(_this.fadeDelay), $('.easy-dailog-filter').fadeOut(_this.fadeDelay))
+                        .then(_this.fadeCallback);
+                }
             };
             // initilize();
-            this.isShowImage ? $.when(this.imgReady()).then(initilize()) : initilize();
+            this.isShowImage ? $.when(this.imgReady()).then(initilize(), function() {
+                _this.cont.find('img').attr('alt', '图片载入失败');
+            }) : initilize();
         },
         updateHeight: function() {
             this.isUpdate = true;
             this.fixHeight();
             return this;
         },
-        // 浮层内容渲染好后，再计算高度并更改
-        fixHeight: function(isUpdate) {
+        fixHeight: function() {
             var _this = this,
-                h = this.getDialogModelStyle().containerHeight;
+                height = _this.height || _this.cont.outerHeight(),
+                totalHeight = height + this.footer.outerHeight() + this.header.outerHeight();
             this.container.css({
-                'height': h + 'px',
-                'marginTop': _this.topCenter ? ((-h / 2) + (my.isIE6() ? $(window).scrollTop() : 0) + 'px') : '0'
+                'height': totalHeight + 'px',
+                'marginTop': _this.topCenter ? ((-totalHeight / 2) + (my.isIE6() ? $(window).scrollTop() : 0) + 'px') : '0'
             });
+
             this.cont.parent('.easy-dialog-content').css({
-                'height': _this.cont.outerHeight() + 'px'
+                'height': (_this.height || _this.cont.outerHeight()) + 'px'
             });
             return this;
         },
@@ -160,7 +184,6 @@
                 readyCallback,
                 timer,
                 startTime = new Date(),
-                endTime,
                 limitTime; //统计调用时间
             readyCallback = function() {
                 limitTime = new Date() - startTime;
@@ -186,10 +209,11 @@
         getDialogModelStyle: function() {
             // 精确获取内容实际宽高
             // 弹层内容宽度
-            this.width = this.isUpdate ? this.cont.outerWidth() : this.width || this.cont.outerWidth();
-            // 弹层内容高度
-            this.height = this.isUpdate ? this.cont.outerHeight() : this.height || this.cont.outerHeight();
-
+            if (this.width && this.height && this.isUpdate) {
+                this.width = this.cont.outerWidth();
+                // 弹层内容高度
+                this.height = this.cont.outerHeight();
+            }
             var headerHeight = this.header.outerHeight(),
                 footerHeight = this.footer.outerHeight(),
                 containerHeight = this.height + headerHeight + footerHeight;
@@ -199,8 +223,8 @@
                 footerHeight: footerHeight,
                 containerHeight: containerHeight
             };
-
         },
+
         // 设置浮层的位置
         // 这样配置灵活
         setDialogPosition: function() {
@@ -216,8 +240,6 @@
         // 渲染弹层相关盒子样式
         renderDialogModel: function() {
             var _this = this,
-                containerHeight = this.getDialogModelStyle().containerHeight,
-                windowScrollTop = $(window).scrollTop(),
                 dialogStyleSettings = {}, pubSettings = {};
 
             // 初始化浮层位置
@@ -244,7 +266,7 @@
             }
             // 公共样式配置
             pubSettings = {
-                'position': my.isIE6() ? 'absolute' : 'fixed',
+                'position': (my.isIE6() || _this.isFixed) ? 'absolute' : 'fixed',
                 'width': _this.width + 'px',
                 'marginLeft': _this.leftCenter ? ((-_this.width / 2) + 'px') : '0',
                 'zIndex': _this.zIndex
@@ -288,7 +310,6 @@
             if (my.isYourType(this.setDialogContent(), 'string')) {
                 this.cont.html(this.setDialogContent());
             } else {
-                // 异步处理，返回this.cont接口，以供回调
                 this.setDialogContent(this.cont);
             }
 
@@ -306,7 +327,8 @@
             var filterHeight = Math.max(this.getDialogModelStyle().containerHeight, $(document).height());
             $('.easy-dailog-filter').css({
                 'height': filterHeight + 'px',
-                'z-index': _this.zIndex - 1
+                'z-index': _this.zIndex - 1,
+                'opacity': '0.6'
             }).show();
             return this;
         },
@@ -329,7 +351,7 @@
 
             // 滚动滚动条时，调整弹层位置
             // 只针对IE6
-            my.isIE6() && $(window).on('scroll', $.proxy(_this.scrollEvent, _this));
+            my.isIE6() && (!this.isFixed) && $(window).on('scroll', $.proxy(_this.scrollEvent, _this));
 
             $(document).on('click', function(e) {
                 var t = $(e.target);
@@ -352,15 +374,14 @@
                 'marginLeft': (-this.width / 2) + scrollLeft + 'px'
             });
         },
-        // 销毁浮层内容区
-        destory: function() {
-            this.container.html('').attr('style', '').removeData('plugin-' + pluginName);
-            return this;
-        },
         // 按钮关闭
         // 这里要考虑，关闭按钮后，是否清空内容区，还是仅仅隐藏
         closeEvent: function() {
-            this.isDestroy ? this.destory() : this.hideDialog();
+            if (this.isDestroy) {
+                this.container.html('').attr('style', '').removeData('plugin-' + pluginName);
+            } else {
+                this.hideDialog();
+            }
             // 遮罩层考虑不进行清空
             this.hideFilter();
         },
@@ -368,7 +389,7 @@
         // 只有回调函数返回true，才执行关闭
         confirmEvent: function() {
             // 此处对于是否存在回调，要做进一步的判断
-            my.isYourType(this.OK, 'function') && this.OK() && this.closeEvent();
+            my.isYourType(this.OK, 'function') && this.OK(this.cont) && this.closeEvent();
         },
         // 取消事件
         cancelEvent: function() {
@@ -402,13 +423,20 @@
      */
     $.fn[pluginName].defaults = {
         width: 300,
+        height: 0,
         OKType: 'button',
         OKVal: '确定',
         tit: '',
-        closeTxt: '关闭',
+        closeTxt: '×',
+        isFade: false,
+        fadeDelay: 1000,
+        fadeCallback: function() {
+
+        },
+        isFixed: false,
         isShowImage: false,
-        limitTime: 300, //图片载入时间限制
         isDestroy: false,
+        isShowHeader: true,
         isShowFooter: true,
         isShowFilter: true,
         tmp: function() {

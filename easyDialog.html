@@ -6,40 +6,67 @@
         <link rel="stylesheet" href="easyDialog.css" />
     </head>
     <body>
-        <div class="other" >
-        </div>
+        <button class="btn-normal">normal dialog</button>
+        <button class="btn-fade">fade dialog</button>
         <div id="easy-dialog" class="easy-dialog"></div>
         <div id="easy-dialog2" class="easy-dialog"></div>
+        <div id="easy-dialog3" class="easy-dialog"></div>
+        <div id="easy-dialog4" class="easy-dialog"></div>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
         <script type="text/javascript" src="easyDialog.js"></script>
         <script type="text/javascript">
             $(function() {
-                $('#easy-dialog2').easyDialog({
-                    // 'height': 80,
-                    'tit': '测试标题',
-                    isDestroy:true,
-                    tmp: function(cont) {
-                        var _this=this;
-                        $(cont).html('<p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p>');
-                        return setTimeout(function(){
-                            $(cont).html('<div>异步回调，异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调</div>');
-                            _this.updateHeight();
-                        },5*1000);
-                    }, 
-                    'closeTxt': '[]',
-                    OK: function() {
-                        $('#easy-dialog').easyDialog({
-                            // 'height': 80,
-                            'tit': '测试标题',
-                            tmp: '<p>你点开了浮层2</p>', 
-                            'closeTxt': 'close',
-                            OK: function() {
-                                
-                            }
-                        });
-                        return true;
-                    }
-                });
+                // 普通浮层
+                var normalDialog=function(){
+                    $('#easy-dialog2').easyDialog({
+                        height: 300,
+                        tit: '测试标题',
+                        isDestroy:true,
+                        tmp: function(cont) {
+                            var _this=this;
+                            $(cont).html('<p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p><p>先等待5秒哦</p>');
+                            return setTimeout(function(){
+                                $(cont).html('<div>异步回调，异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调异步回调</div>');
+                                _this.updateHeight();
+                            },5*1000);
+                        }, 
+                        closeTxt: '[]',
+                        OK: function() {
+                            $('#easy-dialog').easyDialog({
+                                // 'height': 80,
+                                'tit': '测试标题',
+                                tmp: '<p>你点开了浮层2</p>', 
+                                'closeTxt': 'close',
+                                OK: function() {
+                                    return true;
+                                }
+                            });
+                            return true;
+                        }
+                    });
+                };
+
+                var fadeDialog=function(){
+                    $('#easy-dialog3').easyDialog({
+                        height: 300,
+                        tit: '浮层33333',
+                        isShowHeader:false,
+                        isShowFooter:false,
+                        isFade:true,
+                        fadeDelay:3000,
+                        fadeCallback:function(){
+                            // 自动关闭后的回调
+                            // console.log('要关闭了！！！');
+                            // location.reload(true);
+                        },
+                        isDestroy:true,
+                        tmp: function() {
+                            return '<p>'+this.fadeDelay/1000+'秒后就消失了</p>'
+                        }
+                    });
+                };
+                $('.btn-normal').on('click',normalDialog);
+                $('.btn-fade').on('click',fadeDialog);
             });
         </script>
     </body>

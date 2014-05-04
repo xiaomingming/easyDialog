@@ -10,7 +10,9 @@
 * 支持浮层信息DOM片段定义
 * 遮罩显示/隐藏
 * 浮层底部显示/隐藏
+* 浮层固定，不随页面动
 * 浮层层叠值设置
+* 浮层自动关闭
 
 
 ##兼容性
@@ -206,6 +208,29 @@ $('#easy-dialog').easyDialog({
             $(cont).html('<div><p>异步回调，我要填充，使劲儿填充，充满你的身体。</p><p>异步回调，我要填充，使劲儿填充，充满你的身体。</p><p>异步回调，我要填充，使劲儿填充，充满你的身体。</p></div>');
             _this.updateHeight();
         },3*1000);
+    }
+});
+```
+13.浮层自动关闭
+
+自动关闭有显示的时间限制，以及对应的回调函数，目前采用了渐隐效果。
+
+```javascript
+$('#easy-dialog').easyDialog({
+    height: 300,
+    tit:'浮层',
+    isShowHeader:false,
+    isShowFooter:false,
+    isFade:true,//开启自动关闭
+    fadeDelay:3000,//动画持续时间
+    fadeCallback:function(){
+        // 自动关闭后的回调
+        // console.log('要关闭了！！！');
+        // location.reload(true);
+    },
+    isDestroy:true,
+    tmp: function() {
+        return '<p>'+this.fadeDelay/1000+'秒后就消失了</p>'
     }
 });
 ```
