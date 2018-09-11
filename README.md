@@ -1,6 +1,4 @@
-#easyDialog
-
-##一个简单的jquery弹层插件
+## 一个简单的jquery弹层插件
 
 这是一个基于`jquery 1.8.2`版本的弹层插件，目前支持的功能包括：
 
@@ -15,17 +13,17 @@
 * 浮层自动关闭
 
 
-##兼容性
+## 兼容性
 
 IE6+，其它高级浏览器。
 
-##使用文档
-###html
+## 使用文档
+### html
 
 ```html:
 <div id="easy-dialog" class="easy-dialog"></div>
 ```
-###javascript 调用
+### javascript 调用
 
 请先引入`jquery 1.8.2`版本库脚本，然后基本调用如下：
 
@@ -40,7 +38,7 @@ $('#easy-dialog').easyDialog({
     }
 });
 ```
-###参数说明
+### 参数说明
 1.设置浮层内容区域宽度，高度，不包括浮层头部和底部操作区域。
 
 ```javascript
